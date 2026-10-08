@@ -1872,7 +1872,10 @@ public class SiScolApogeeWSServiceImpl implements SiScolGenericService, Serializ
 			final EntityManagerFactory emf = Persistence.createEntityManagerFactory("pun-jpa-siscol");
 			final EntityManager em = emf.createEntityManager();
 			em.getTransaction().begin();
-			final Query query = em.createNativeQuery("DELETE FROM OPI_PJ WHERE COD_IND_OPI = " + codIndOpi + " AND COD_TPJ = '" + codTpj + "'");
+			// Fix SQL injection vulnerability by using parameterized query
+			final Query query = em.createNativeQuery("DELETE FROM OPI_PJ WHERE COD_IND_OPI = ?1 AND COD_TPJ = ?2");
+			query.setParameter(1, codIndOpi);
+			query.setParameter(2, codTpj);
 			query.executeUpdate();
 			em.getTransaction().commit();
 			em.close();
